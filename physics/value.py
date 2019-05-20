@@ -16,16 +16,24 @@ class Value(float):
 
     """Value object built on the float object and using `Pint Units <https://pint.readthedocs.io/en/0.9/>`_.
 
-        :param value: The float value
-        :type value: float
-        :param unit: The unit for this value
-        :type unit: pint.unit
+        Args:
+            value (float): The float value
+            unit (pint.unit._Unit, optional): The unit for this value.  Default is dimensionless ('')
+            name (str, optional): The name of the value.  Default is None but needed to create a tensor for the Value instance
 
-        Example::
+        Basic Example::
             resistance = Value(value=1.0, unit=ureg.ohm)
             current = Value(value=2.0, unit=ureg.amp)
             voltage = current * resistance
             '2.0 A·Ω'
+
+        Value instances can also work with numpy ndarray.  Make sure the dtype of the np.ndarray is **object**::
+            resistance = Value(value=1.0, unit=ureg.ohm)
+            array = np.array([resistance, resistance, resistance], dtype=object)
+            current = Value(value=2.0, unit=ureg.amp)
+            voltage = current * resistance
+            print(voltage)
+            ndarray([2.0 A·Ω, 2.0 A·Ω, 2.0 A·Ω])
     """
 
     def __new__(cls, value, unit='', name=None):
@@ -51,10 +59,9 @@ class Value(float):
     def __str__(self):
         return '{0} '.format(self.value) + self.unit_str()
 
-    def __init__(self, value, unit, name=None):
+    def __init__(self, value, unit=ureg.dimensionless, name=None):
 
-        assert isinstance(unit, pint.unit._Unit), 'You must create a value with a unit form physics.value.ureg.' \
-                                                         ' See Docs for details.'
+        assert isinstance(unit, pint.unit._Unit), 'You must create a value with a unit form physics.value.ureg. See Docs for details.'
         float.__init__(value)
         # make sure this is the simplest form
         # test = value * unit
@@ -101,28 +108,12 @@ class Value(float):
         result = Value(value=result.magnitude, unit=result.units)
         return result
 
-    # function for adding
-    def add(self, other):
-
-        """
-        Adds to values together
-
-            :param self: Value instance
-            :type self: physics.value.Value
-            :param other: The object to be added
-            :type other: Value, float, int, or np.ndarray:
-
-            :returns Value: Returns a new Value object (or np.ndarray if other was np.ndarray)
-
-            For Example::
-
-            example = Value(value=1.0, unit=ureg.ohm)
-            print(example.unit_str())
-            'Ω'
-        """
-        return self.__add__(other)
+    # multiply is commutative
+    __rmul__ = __mul__
 
     def __truediv__(self, other):
+        if isinstance(other, np.ndarray):
+            return np.array([self], dtype=object) / other
         if not isinstance(other, Value) and (isinstance(other, float) or isinstance(other, int)):
             return Value(value=super(Value, self).__truediv__(other), unit=self.unit)
         assert isinstance(other, Value), 'You can only multiple Values with other Values'
@@ -131,6 +122,24 @@ class Value(float):
         result *= (self.unit / other.unit)
         result = Value(value=result.magnitude, unit=result.units)
         return result
+
+    def __rtruediv__(self, other):
+        if isinstance(other, np.ndarray):
+            return other / np.array([self], dtype=object)
+        if not isinstance(other, Value) and (isinstance(other, float) or isinstance(other, int)):
+            return Value(value=super(Value, self).__rtruediv__(other), unit=self.unit)
+        assert isinstance(other, Value), 'You can only multiple Values with other Values'
+        # result = self.value * other.value
+        result = super(Value, self).__rtruediv__(other)
+        result *= (other.unit / self.unit)
+        result = Value(value=result.magnitude, unit=result.units)
+        return result
+
+    # this will force numpy to use my operators. May depreciate in the future
+    __array_priority__ = 17
+
+    __div__ = __truediv__
+    __rdiv__ = __rtruediv__
 
     def sqrt(self):
         a = self.unit**0.5
@@ -157,6 +166,9 @@ class Value(float):
         result = Value(value=result.magnitude, unit=result.units)
         return result
 
+    # reverse add is the same as forward add
+    __radd__ = __add__
+
     def __sub__(self, other):
         if isinstance(other, np.ndarray):
             return other - np.array([self], dtype=object)
@@ -169,6 +181,10 @@ class Value(float):
         result = self.value*self.unit - other.value*other.unit
         result = Value(value=result.magnitude, unit=result.units)
         return result
+
+    def __rsub__(self, other):
+        result = self.__sub__(other)
+        return Value(value=result.value*-1, unit=result.value)
 
     def __eq__(self, other):
         # Check they are both values
