@@ -11,11 +11,10 @@ class Value(float):
 
     """Value object built on the float object and using `Pint Units <https://pint.readthedocs.io/en/0.9/>`_.
 
-       Attributes:
-           :param value: The float value
-           :type float:
-           :param unit: The unit for this value
-           :type pint.unit: From the Pint package
+        :param value: The float value
+        :type value: float
+        :param unit: The unit for this value
+        :type unit: pint.unit
 
         Example:
             >>> resistance = Value(value=1.0, unit=ureg.ohm)
@@ -33,12 +32,7 @@ class Value(float):
 
         """Gives the str of the unit.
 
-            Args:
-                :param self: Value instance
-                :type Value: class: 'physics.value.Value'
-
-            Returns:
-                :return str: A string of the unit
+            :returns str: A string of the unit
 
             For Example:
 
@@ -94,23 +88,22 @@ class Value(float):
 
     # function for adding
     def add(self, other):
-        """Adds to values together
 
-                Args:
-                    :param self: Value instance
-                    :type Value: class: 'physics.value.Value'
-                    :param other: The object to be added
-                    :type Value, float, int, or np.ndarray:
+        """
+        Adds to values together
 
-                Returns:
-                    :return Value: Returns a new Value object (or np.ndarray if other was np.ndarray)
+            :param self: Value instance
+            :type self: physics.value.Value
+            :param other: The object to be added
+            :type other: Value, float, int, or np.ndarray:
 
-                For Example:
+            :returns Value: Returns a new Value object (or np.ndarray if other was np.ndarray)
 
-                >>> example = Value(value=1.0, unit=ureg.ohm)
-                >>> print(example.unit_str())
-                Ω
-                >>>
+            For Example::
+
+            example = Value(value=1.0, unit=ureg.ohm)
+            print(example.unit_str())
+            'Ω'
         """
         return self.__add__(other)
 
