@@ -1,7 +1,12 @@
 # H1 -- For the Value class
 # *************************
 from physics.units import complete_units, ureg, pint_to_str, str_to_pint
+import pint
 import numpy as np
+import physics.conf as conf
+
+if conf.tf_flag:
+    import tensorflow as tf
 
 # H3 -- Value Class
 # -----------------
@@ -16,14 +21,14 @@ class Value(float):
         :param unit: The unit for this value
         :type unit: pint.unit
 
-        Example:
-            >>> resistance = Value(value=1.0, unit=ureg.ohm)
-            >>> current = Value(value=2.0, unit=ureg.amp)
-            >>> voltage = current * resistance
+        Example::
+            resistance = Value(value=1.0, unit=ureg.ohm)
+            current = Value(value=2.0, unit=ureg.amp)
+            voltage = current * resistance
             '2.0 A·Ω'
     """
 
-    def __new__(cls, value, unit=''):
+    def __new__(cls, value, unit='', name=None):
         # assert unit in complete_units, 'Your unit {0} is not in the list of available units'.format(unit)
         # value, unit = cls.SI_unit(value, unit)
         return float.__new__(cls, value)
@@ -34,25 +39,29 @@ class Value(float):
 
             :returns str: A string of the unit
 
-            For Example:
+            For Example::
 
-            >>> example = Value(value=1.0, unit=ureg.ohm)
-            >>> print(example.unit_str())
+            example = Value(value=1.0, unit=ureg.ohm)
+            print(example.unit_str())
             Ω
             """
 
-        return '{:~P}'.format(self.unit)
+        return pint_to_str(self.unit)
 
     def __str__(self):
         return '{0} '.format(self.value) + self.unit_str()
 
-    def __init__(self, value, unit):
+    def __init__(self, value, unit, name=None):
+        assert isinstance(unit, pint.UnitRegistry.Unit), 'You must create a value with a unit form physics.value.ureg.' \
+                                                         ' See Docs for details.'
         float.__init__(value)
         # make sure this is the simplest form
         # test = value * unit
         # test.to_reduced_units()
         self.unit = unit
         self.value = value
+        if conf.tf_flag:
+            self.placeholder = tf.placeholder(name=name, shape=(None, 1), dtype=conf.tf_dtype)
 
     def adjust_unit(self, desired_unit):
         tmp = self.value*self.unit
@@ -155,8 +164,50 @@ class Value(float):
         result = Value(value=result.magnitude, unit=result.units)
         return result
 
-# a = Value(8.0, ureg.ohm)
-# d = 5.0
-# c = a * d
-# d = 5
+    def __eq__(self, other):
+        # Check they are both values
+        if isinstance(other, Value):
+            # check they are the same
+            return self.value*self.unit == other.value*other.unit
+        # if other is not unit, then they are not the same
+        else:
+            return False
+
+    def __gt__(self, other):
+        # Check they are both values
+        if isinstance(other, Value):
+            # check they are the same
+            return self.value * self.unit > other.value * other.unit
+        # if other is not unit, then they are not the same
+        else:
+            return False
+
+    def __lt__(self, other):
+        # Check they are both values
+        if isinstance(other, Value):
+            # check they are the same
+            return self.value * self.unit < other.value * other.unit
+        # if other is not unit, then they are not the same
+        else:
+            return False
+
+    def __le__(self, other):
+        return self.__eq__(other) or self.__lt__(other)
+
+    def __ge__(self, other):
+        return self.__eq__(other) or self.__gt__(other)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    @property
+    def tensor(self):
+        return self.placeholder
+
+    # get the value output
+    @tensor.getter
+    def tensor(self):
+        # if self.__value is None:
+        #     raise ValueError('You have not set the value')
+        return self.placeholder
 
