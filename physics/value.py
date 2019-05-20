@@ -52,7 +52,8 @@ class Value(float):
         return '{0} '.format(self.value) + self.unit_str()
 
     def __init__(self, value, unit, name=None):
-        assert isinstance(unit, pint.UnitRegistry.Unit), 'You must create a value with a unit form physics.value.ureg.' \
+
+        assert isinstance(unit, pint.unit._Unit), 'You must create a value with a unit form physics.value.ureg.' \
                                                          ' See Docs for details.'
         float.__init__(value)
         # make sure this is the simplest form
@@ -60,8 +61,13 @@ class Value(float):
         # test.to_reduced_units()
         self.unit = unit
         self.value = value
+        self.name = name
+        # if the tf flag is raised and a name is give, then create a placeholder
         if conf.tf_flag:
-            self.placeholder = tf.placeholder(name=name, shape=(None, 1), dtype=conf.tf_dtype)
+            if name is None:
+                self.placeholder = None
+            else:
+                self.placeholder = tf.placeholder(name=name, shape=(None, 1), dtype=conf.tf_dtype)
 
     def adjust_unit(self, desired_unit):
         tmp = self.value*self.unit
@@ -201,13 +207,15 @@ class Value(float):
         return not self.__eq__(other)
 
     @property
-    def tensor(self):
+    def __tensor(self):
+        assert self.placeholder is not None, 'This value does not have a tensor. Be sure the conf.tf_flag is True and a name was given ' \
+                                             'for the Value instance.'
         return self.placeholder
 
     # get the value output
-    @tensor.getter
+    @__tensor.getter
     def tensor(self):
         # if self.__value is None:
         #     raise ValueError('You have not set the value')
-        return self.placeholder
+        return self.__tensor
 
