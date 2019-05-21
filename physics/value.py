@@ -36,7 +36,7 @@ class Value(float):
             ndarray([2.0 A·Ω, 2.0 A·Ω, 2.0 A·Ω])
     """
 
-    def __new__(cls, value, unit='', name=None):
+    def __new__(cls, value, unit=ureg.dimensionless, name=None):
         # assert unit in complete_units, 'Your unit {0} is not in the list of available units'.format(unit)
         # value, unit = cls.SI_unit(value, unit)
         return float.__new__(cls, value)
@@ -60,7 +60,8 @@ class Value(float):
         return '{0} '.format(self.value) + self.unit_str()
 
     def __init__(self, value, unit=ureg.dimensionless, name=None):
-
+        if unit is None:
+            unit = ureg.dimensionless
         assert isinstance(unit, pint.unit._Unit), 'You must create a value with a unit form physics.value.ureg. See Docs for details.'
         float.__init__(value)
         # make sure this is the simplest form

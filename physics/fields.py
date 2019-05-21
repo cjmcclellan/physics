@@ -41,12 +41,21 @@ class Field(object):
             print(voltage)
             ndarray([2.0 A·Ω, 2.0 A·Ω, 2.0 A·Ω])
     """
-    def __init__(self, field):
+    def __init__(self, field, unit=None):
 
         assert field in available_fields.keys(), 'Your chosen field {} is not in list of available fields. See Docs.'.format(field)
 
         self.field = field
 
+        # if unit is none, then use the default unit
+        if unit is None:
+            self.unit = available_fields[self.field]
+        else:
+            assert isinstance(unit, pint.unit._Unit), 'Your unit for this field must be from physics.value.ureg.'
+            assert unit.dimensionality ==\
+                   available_fields[self.field].dimensionality, 'Your input unit does not have the right dimensions.' \
+                                                                ' You gave {0} but it should be {1}.'.format(unit.dimensionality, available_fields[self.field].dimensionality)
+            self.unit = unit
         # for comparing if two param types are the same
 
     def __eq__(self, other):
