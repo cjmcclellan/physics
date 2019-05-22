@@ -225,17 +225,17 @@ class Value(float):
 
     # define some properties
     @property
-    def tensor(self):
+    def __tensor(self):
         assert self.placeholder is not None, 'This value does not have a tensor. Be sure the conf.tf_flag is True and a name was given ' \
                                              'for the Value instance.'
         return self.placeholder
 
     # get the value output
-    @tensor.getter
+    @__tensor.getter
     def tensor(self):
         # if self.__value is None:
         #     raise ValueError('You have not set the value')
-        return self.tensor
+        return self.__tensor
 
     @property
     def tf_feed(self):
