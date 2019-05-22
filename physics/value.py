@@ -223,16 +223,41 @@ class Value(float):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    # define some properties
     @property
-    def __tensor(self):
+    def tensor(self):
         assert self.placeholder is not None, 'This value does not have a tensor. Be sure the conf.tf_flag is True and a name was given ' \
                                              'for the Value instance.'
         return self.placeholder
 
     # get the value output
-    @__tensor.getter
+    @tensor.getter
     def tensor(self):
         # if self.__value is None:
         #     raise ValueError('You have not set the value')
-        return self.__tensor
+        return self.tensor
 
+    @property
+    def tf_feed(self):
+        return np.reshape(np.array(self.value), newshape=(1, 1))
+    # # create a copy property used for copying a value over
+    # @property
+    # def copy(self):
+    #     return None
+    #
+    # @copy.setter
+    # def copy(self, _input):
+    #
+    #     assert isinstance(_input, Value), 'The given copy object should be of type Value.'
+    #
+    #     if _input.placeholder is None:
+    #         tmp = self.placeholder
+    #
+    #     self = _input
+    #
+    #
+
+
+
+        # if self.__value is None:
+        #     raise ValueError('You have not set the value')
