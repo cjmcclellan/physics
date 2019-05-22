@@ -223,6 +223,12 @@ class Value(float):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    # the copy value function. Used for taking an __input Value but keeping the tensor
+    def copy_value(self, __input):
+        assert isinstance(__input, Value), 'You can only copy_value from a Value instance'
+        self.value = __input.value
+        self.unit = __input.unit
+
     # define some properties
     @property
     def __tensor(self):
