@@ -75,4 +75,4 @@ class Field(object):
 
     # string operator
     def __str__(self):
-        return str(self.field + ' ' + available_fields[self.field])
+        return str(self.field + ' ' + pint_to_str(available_fields[self.field]))
