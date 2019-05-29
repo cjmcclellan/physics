@@ -112,6 +112,9 @@ class Value(float):
     # multiply is commutative
     __rmul__ = __mul__
 
+    def __abs__(self):
+        return Value(value=abs(self.value), unit=self.unit)
+
     def __truediv__(self, other):
         if isinstance(other, np.ndarray):
             return np.array([self], dtype=object) / other
@@ -150,6 +153,7 @@ class Value(float):
         return Value(self.value**power, unit=self.unit**power)
 
     def unit_copy(self, other):
+        assert not isinstance(other, Value), "You cannot create a value from another value"
         assert isinstance(other, float) or isinstance(other, int), 'You can only create a value from a float or int'
         return Value(value=other, unit=self.unit)
 
