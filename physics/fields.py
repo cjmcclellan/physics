@@ -41,11 +41,14 @@ class Field(object):
             print(voltage)
             ndarray([2.0 A·Ω, 2.0 A·Ω, 2.0 A·Ω])
     """
-    def __init__(self, field, unit=None):
+    def __init__(self, field, name=None, unit=None):
 
         assert field in available_fields.keys(), 'Your chosen field {} is not in list of available fields. See Docs.'.format(field)
 
         self.field = field
+
+        # the name of this field
+        self.name = name
 
         # if unit is none, then use the default unit
         if unit is None:
@@ -63,7 +66,7 @@ class Field(object):
         # Check they are both paramtype
         if isinstance(other, Field):
             # check they are the same
-            return self.field == other.field
+            return self.field == other.field and self.name == other.name
 
         # if other is not paramtype, then they are not the same
         else:
@@ -71,7 +74,7 @@ class Field(object):
 
     # hash for using a as dict key
     def __hash__(self):
-        return hash((self.field,))
+        return hash((self.field, self.name))
 
     # string operator
     def __str__(self):
