@@ -12,6 +12,9 @@ It is recommended to use the Value arithmetic functions instead of python operat
 Example:
 
 
+#### Working with Python2
+Due to various encoding issues with python2, I changed many of the symbols in the doc strings such that the actually symbols will be different when printed.
+
 
 #### Sphinx Docs
 

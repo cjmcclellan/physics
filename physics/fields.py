@@ -31,7 +31,7 @@ class Field(object):
             resistance = Value(value=1.0, unit=ureg.ohm)
             current = Value(value=2.0, unit=ureg.amp)
             voltage = current * resistance
-            '2.0 A·Ω'
+            '2.0 A*Ohm'
 
         Value instances can also work with numpy ndarray.  Make sure the dtype of the np.ndarray is **object**::
             resistance = Value(value=1.0, unit=ureg.ohm)
@@ -39,7 +39,7 @@ class Field(object):
             current = Value(value=2.0, unit=ureg.amp)
             voltage = current * resistance
             print(voltage)
-            ndarray([2.0 A·Ω, 2.0 A·Ω, 2.0 A·Ω])
+            ndarray([2.0 A*Ohm, 2.0 A*Ohm, 2.0 A*Ohm])
     """
     def __init__(self, field, name=None, unit=None):
 
