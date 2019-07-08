@@ -17,7 +17,7 @@ unit_options = {
     'meter ** 2 * ohm': ureg.ohm * ureg.meter * ureg.meter,
 }
 
-unit_options_str = {unit: '{:~P}'.format(unit_pint) for unit, unit_pint in unit_options.items()}
+unit_options_str = {unit: '{0}'.format(unit_pint) for unit, unit_pint in unit_options.items()}
 
 prefix_options = {
     ('nano', 'n'): 1e-9,
