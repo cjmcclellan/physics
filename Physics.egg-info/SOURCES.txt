@@ -3,8 +3,15 @@ setup.py
 Physics.egg-info/PKG-INFO
 Physics.egg-info/SOURCES.txt
 Physics.egg-info/dependency_links.txt
+Physics.egg-info/requires.txt
 Physics.egg-info/top_level.txt
 physics/__init__.py
+physics/conf.py
+physics/docs.py
+physics/docstring.py
+physics/fields.py
 physics/fundamental_constants.py
 physics/units.py
 physics/value.py
+test/__init__.py
+test/test.py
