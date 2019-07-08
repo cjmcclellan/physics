@@ -17,11 +17,11 @@ unit_options = {
     'meter ** 2 * ohm': ureg.ohm * ureg.meter * ureg.meter,
 }
 
-unit_options_str = {unit: '{:~P}'.format(unit_pint.encode("utf-8")) for unit, unit_pint in unit_options.items()}
+unit_options_str = {unit: '{:~P}'.format(unit_pint.encode()) for unit, unit_pint in unit_options.items()}
 
 prefix_options = {
     ('nano', 'n'): 1e-9,
-    ('micro', '\u03BC'): 1e-6,
+    ('micro', '\u03BC'.encode()): 1e-6,
     ('milli', 'm'): 1e-3,
     ('centi', 'c'): 1e-2,
     ('', ''): 1,
