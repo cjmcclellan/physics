@@ -17,6 +17,8 @@ unit_options = {
     'meter ** 2 * ohm': ureg.ohm * ureg.meter * ureg.meter,
 }
 
+
+
 unit_options_str = {unit: '{0}'.format(
     unit_pint.encode('utf8'))
                     for unit, unit_pint in unit_options.items()}
