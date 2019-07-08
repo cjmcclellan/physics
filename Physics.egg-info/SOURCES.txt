@@ -13,5 +13,5 @@ physics/fields.py
 physics/fundamental_constants.py
 physics/units.py
 physics/value.py
-test/__init__.py
-test/test.py
+physics/test/__init__.py
+physics/test/test.py
