@@ -54,7 +54,7 @@ class Value(float):
             Ohm
             """
 
-        return pint_to_str(self.unit)
+        return pint_to_str(self.unit).decode('utf8')
 
     def __str__(self):
         return '{0} '.format(self.value) + self.unit_str()

@@ -31,6 +31,8 @@ Description: ## Readme for Physics
         To build the docs, create the docs directory and run `sphinx-quickstart --ext-autodoc`
         
         
+        #### Notes On Updated Package
+        run `python setup.py bdist_wheel` before committing to github
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License

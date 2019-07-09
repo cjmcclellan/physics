@@ -22,3 +22,6 @@ This project uses Sphinx for creating documentation.
 
 To build the docs, create the docs directory and run `sphinx-quickstart --ext-autodoc`
 
+
+#### Notes On Updated Package
+run `python setup.py bdist_wheel` before committing to github
