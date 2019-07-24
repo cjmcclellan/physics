@@ -6,5 +6,5 @@ tf_flag = True
 if tf_flag:
     import tensorflow as tf
 
-tf_dtype = tf.float32
+    tf_dtype = tf.float32
 

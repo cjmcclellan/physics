@@ -12,6 +12,7 @@ physics/docstring.py
 physics/fields.py
 physics/fundamental_constants.py
 physics/units.py
+physics/units_b.py
 physics/value.py
 physics/materials/Material.py
 physics/materials/__init__.py

@@ -18,11 +18,11 @@ unit_options = {
     'meter ** 2 * ohm': ureg.ohm * ureg.meter * ureg.meter,
 }
 
-unit_options_str = {unit: '{0}'.format(unit_pint) for unit, unit_pint in unit_options.items()}
+unit_options_str = {unit: '{0}'.format(unit_pint).encode('utf8') for unit, unit_pint in unit_options.items()}
 
 prefix_options = {
     ('nano', 'n'): 1e-9,
-    ('micro', '\u03BC'): 1e-6,
+    ('micro', '\u03BC'.encode('utf8')): 1e-6,
     ('milli', 'm'): 1e-3,
     ('centi', 'c'): 1e-2,
     ('', ''): 1,
@@ -47,10 +47,10 @@ derived_units = {
 operations = {'divide': '/', 'multiply': '*'}
 
 complete_units = [(unit_pint * prefix).to_compact().units for prefix in prefix_options.values() for unit_pint in unit_options.values()]
-complete_units_dict = {'{}'.format((unit_pint * prefix).to_compact().units): (unit_pint * prefix).to_compact().units for
+complete_units_dict = {'{}'.format((unit_pint * prefix).to_compact().units).encode('utf8'): (unit_pint * prefix).to_compact().units for
                        prefix in prefix_options.values() for unit_pint in unit_options.values()}
 
-complete_units_str = {'{}'.format(unit_pint): '{}'.format(unit_pint) for unit_pint in complete_units}
+complete_units_str = {'{}'.format(unit_pint): '{}'.format(unit_pint).encode('utf8') for unit_pint in complete_units}
 
 all_units = {unit: [(unit_pint * prefix).to_compact().units for prefix in prefix_options.values()] for unit, unit_pint in unit_options.items()}
 
@@ -58,7 +58,7 @@ all_units = {unit: [(unit_pint * prefix).to_compact().units for prefix in prefix
 # all_units = [prefix[1] + unit for prefix in prefix_options.keys() for unit in unit_options.values()]
 
 # useful for dash dropdown options
-all_unit_options = {unit: [{'label': '{}'.format(unit_pint), 'value': '{}'.format(unit_pint)} for unit_pint in all_units[unit]]
+all_unit_options = {unit: [{'label': '{}'.format(unit_pint).encode('utf8'), 'value': '{}'.format(unit_pint).encode('utf8')} for unit_pint in all_units[unit]]
                     for unit in all_units.keys()}
 
 
@@ -103,7 +103,7 @@ def pint_to_str(pint_unit):
         'Ohm'
     """
 
-    return '{}'.format(pint_unit)
+    return '{}'.format(pint_unit).encode('utf8')
 
 
 # # split units into basic units (i.e. removing operations)
