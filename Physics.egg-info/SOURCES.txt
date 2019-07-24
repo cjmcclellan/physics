@@ -13,5 +13,8 @@ physics/fields.py
 physics/fundamental_constants.py
 physics/units.py
 physics/value.py
+physics/materials/Material.py
+physics/materials/__init__.py
+physics/materials/material_registry.py
 physics/test/__init__.py
 physics/test/test.py

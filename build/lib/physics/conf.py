@@ -1,8 +1,10 @@
 # --The configuration file for Physics----------
-import tensorflow as tf
-
 
 # --Tensorflow Flags------------------
 tf_flag = True
+
+if tf_flag:
+    import tensorflow as tf
+
 tf_dtype = tf.float32
 
