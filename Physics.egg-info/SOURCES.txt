@@ -1,4 +1,3 @@
-README.md
 setup.py
 Physics.egg-info/PKG-INFO
 Physics.egg-info/SOURCES.txt
