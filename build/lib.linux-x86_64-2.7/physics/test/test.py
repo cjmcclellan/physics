@@ -4,6 +4,9 @@ import numpy as np
 
 def main():
 
+    a = np.array([1, 2, 3, 4])
+    b = Value.array_like(array=a, unit=ureg.amp)
+
     f = Field(field='voltage', name='nothing')
     print(f)
     a = Value(value=3.0, unit=ureg.amp, name='input_voltage')

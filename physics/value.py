@@ -44,7 +44,7 @@ class Value(float):
     # return an np.ndarray of values given a unit and ndarray
     @classmethod
     def array_like(cls, array, unit):
-        result = np.array([Value(value=x, unit=unit) for x in array])
+        result = np.array([Value(value=x, unit=unit) for x in array], dtype=object)
         return result
 
     def unit_str(self):
