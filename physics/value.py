@@ -239,6 +239,10 @@ class Value(float):
         self.value = __input.value
         self.unit = __input.unit
 
+    # np functions
+    def log10(self):
+        return Value(value=np.log10(self.value), unit=self.unit)
+
     # define some properties
     @property
     def __tensor(self):
