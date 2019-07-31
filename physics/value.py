@@ -185,9 +185,9 @@ class Value(float):
 
     def __sub__(self, other):
         if isinstance(other, np.ndarray):
-            return other - np.array([self], dtype=object)
+            return np.array([self], dtype=object) - other
         if not isinstance(other, Value):
-            return Value(value=other - self.value, unit=self.unit)
+            return Value(value=self.value - other, unit=self.unit)
         # if isinstance(other, float) or isinstance(other, int):
         #     return Value(value=super(Value, self).__sub__(other), unit=self.unit)
         assert isinstance(other, Value), 'You can only multiple Values with other Values'
@@ -198,7 +198,7 @@ class Value(float):
 
     def __rsub__(self, other):
         result = self.__sub__(other)
-        return Value(value=result.value*-1, unit=result.value)
+        return result*-1
 
     def __eq__(self, other):
         # Check they are both values
