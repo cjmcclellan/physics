@@ -140,7 +140,7 @@ class Value(float):
         if isinstance(other, np.ndarray):
             return other / np.array([self], dtype=object)
         if not isinstance(other, Value) and (isinstance(other, float) or isinstance(other, int)):
-            return Value(value=super(Value, self).__rtruediv__(other), unit=1/self.unit)
+            return Value(value=super(Value, self).__rtruediv__(other), unit=(1/self.unit).units)
         assert isinstance(other, Value), 'You can only multiple Values with other Values'
         # result = self.value * other.value
         result = super(Value, self).__rtruediv__(other)
