@@ -10,6 +10,7 @@ def main():
     f = Field(field='voltage', name='nothing')
     print(f)
     a = Value(value=3.0, unit=ureg.amp, name='input_voltage')
+    c = 1/a
     array = np.array([a, a, a], dtype=object)
     b = Value(value=2.0, unit=ureg.volt*ureg.volt, name='input_current')
     d = ureg.amp * array
