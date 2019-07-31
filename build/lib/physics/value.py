@@ -101,6 +101,9 @@ class Value(float):
     def __round__(self, n=None):
         return Value(value=float.__round__(self, n), unit=self.unit)
 
+    def __neg__(self):
+        return Value(value=self.value*-1, unit=self.unit)
+
     def __mul__(self, other):
         # check if this is an ndarray, if so cast the value to an array of the same shape
         if isinstance(other, np.ndarray):
@@ -137,7 +140,7 @@ class Value(float):
         if isinstance(other, np.ndarray):
             return other / np.array([self], dtype=object)
         if not isinstance(other, Value) and (isinstance(other, float) or isinstance(other, int)):
-            return Value(value=super(Value, self).__rtruediv__(other), unit=self.unit)
+            return Value(value=super(Value, self).__rtruediv__(other), unit=1/self.unit)
         assert isinstance(other, Value), 'You can only multiple Values with other Values'
         # result = self.value * other.value
         result = super(Value, self).__rtruediv__(other)
