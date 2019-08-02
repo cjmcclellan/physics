@@ -5,9 +5,6 @@ import pint
 import numpy as np
 import physics.conf as conf
 
-if conf.tf_flag:
-    import tensorflow as tf
-
 
 # ---Give a list of the available fields--------------
 available_fields = {'temperature': ureg.kelvin,
