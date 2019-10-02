@@ -76,3 +76,9 @@ class Field(object):
     # string operator
     def __str__(self):
         return '{0} {1}'.format(self.name, self.field)
+
+    def __setstate__(self, state):
+        self.name, self.field = state
+
+    def __getstate__(self):
+        return (self.name, self.field)

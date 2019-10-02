@@ -263,6 +263,15 @@ class Value(float):
     @property
     def tf_feed(self):
         return np.reshape(np.array(self.value), newshape=(1, 1))
+
+    def __setstate__(self, state):
+        pass
+
+    def __getstate__(self):
+        if self.placeholder is not None:
+            return self.unit, self.value, self.name, self.placeholder.name
+        else:
+            return self.unit, self.value, self.name
     # # create a copy property used for copying a value over
     # @property
     # def copy(self):
