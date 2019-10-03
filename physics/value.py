@@ -265,13 +265,17 @@ class Value(float):
         return np.reshape(np.array(self.value), newshape=(1, 1))
 
     def __setstate__(self, state):
-        pass
+        self.unit, self.value, self.name, self.placeholder = state
+        # if the placeholder is not None, then import it from the default graph
+        if self.placeholder is not None:
+            graph = tf.get_default_graph()
+            self.placeholder = graph.get_tensor_by_name(self.placeholder)
 
     def __getstate__(self):
         if self.placeholder is not None:
             return self.unit, self.value, self.name, self.placeholder.name
         else:
-            return self.unit, self.value, self.name
+            return self.unit, self.value, self.name, None
     # # create a copy property used for copying a value over
     # @property
     # def copy(self):
