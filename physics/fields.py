@@ -9,7 +9,7 @@ import physics.conf as conf
 # ---Give a list of the available fields--------------
 available_fields = {'temperature': ureg.kelvin,
                     'heat_temperature': ureg.kelvin,
-                    'heat flux': ureg.watt/(ureg.meter * ureg.meter),
+                    'heat_flux': ureg.watt/(ureg.meter * ureg.meter),
                     'thermal conductivity': ureg.watt/(ureg.meter * ureg.kelvin),
                     'heat_conductivity': ureg.watt/(ureg.meter * ureg.kelvin),
                     'voltage': ureg.volt,
