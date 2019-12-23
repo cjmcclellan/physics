@@ -36,7 +36,7 @@ class Value(float):
             ndarray([2.0 A*Ohm, 2.0 A*Ohm, 2.0 A*Ohm])
     """
 
-    def __new__(cls, value, unit=ureg.dimensionless, name=None):
+    def __new__(cls, value, unit=ureg.dimensionless, tf_shape=None, name=None):
         # assert unit in complete_units, 'Your unit {0} is not in the list of available units'.format(unit)
         # value, unit = cls.SI_unit(value, unit)
         return float.__new__(cls, value)

@@ -9,7 +9,7 @@ def main():
     print(b[0])
     f = Field(field='voltage', name='nothing')
     print(f)
-    a = Value(value=3.0, unit=ureg.amp, name='input_voltage')
+    a = Value(value=3.0, unit=ureg.amp, name='input_voltage', tf_shape=(None, 1))
     c = 1/a
     array = np.array([a, a, a], dtype=object)
     b = Value(value=2.0, unit=ureg.volt*ureg.volt, name='input_current')
