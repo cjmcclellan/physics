@@ -65,7 +65,7 @@ class Value(float):
     def __str__(self):
         return '{0} '.format(self.value) + self.unit_str()
 
-    def __init__(self, value, unit=ureg.dimensionless, name=None):
+    def __init__(self, value, unit=ureg.dimensionless, name=None, tf_shape=None):
         if unit is None:
             unit = ureg.dimensionless
         assert isinstance(unit, pint.unit._Unit), 'You must create a value with a unit form physics.value.ureg. See Docs for details.'
@@ -81,7 +81,10 @@ class Value(float):
             if name is None:
                 self.placeholder = None
             else:
-                self.placeholder = tf.placeholder(name=name, shape=(None, 1), dtype=conf.tf_dtype)
+                if tf_shape is None:
+                    tf_shape = (None, 1)
+                self.tf_shape = tf_shape
+                self.placeholder = tf.placeholder(name=name, shape=self.tf_shape, dtype=conf.tf_dtype)
 
     def adjust_unit(self, desired_unit):
         tmp = self.value*self.unit
@@ -262,7 +265,8 @@ class Value(float):
 
     @property
     def tf_feed(self):
-        return np.reshape(np.array(self.value), newshape=(1, 1))
+        newshape = np.ones_like(self.tf_shape)
+        return np.reshape(np.array(self.value), newshape=newshape)
 
     def __setstate__(self, state):
         self.unit, self.value, self.name, self.placeholder = state
