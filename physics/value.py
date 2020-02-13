@@ -63,6 +63,8 @@ class Value(float):
                              ' can be converted right now.'.format(len(array.shape)))
         return result
 
+
+
     def unit_str(self):
 
         """Gives the str of the unit.
@@ -150,7 +152,10 @@ class Value(float):
             return Value(value=super(Value, self).__truediv__(other), unit=self.unit)
         assert isinstance(other, Value), 'You can only multiple Values with other Values'
         # result = self.value * other.value
-        result = super(Value, self).__truediv__(other)
+        try:
+            result = super(Value, self).__truediv__(other)
+        except ZeroDivisionError:
+            return np.inf
         result *= (self.unit / other.unit)
         result = Value(value=result.magnitude, unit=result.units)
         return result
