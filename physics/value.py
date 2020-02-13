@@ -20,6 +20,7 @@ class Value(float):
             value (float): The float value
             unit (pint.unit._Unit, optional): The unit for this value.  Default is dimensionless ('')
             name (str, optional): The name of the value.  Default is None but needed to create a tensor for the Value instance
+            tf_shape (tuple, optional): The shape of the tensor
 
         Basic Example::
             resistance = Value(value=1.0, unit=ureg.ohm)
@@ -44,7 +45,22 @@ class Value(float):
     # return an np.ndarray of values given a unit and ndarray
     @classmethod
     def array_like(cls, array, unit):
-        result = np.array([Value(value=x, unit=unit) for x in array], dtype=object)
+        """
+        Converts all the floats in array to Values
+        Args:
+            array (np.ndarray): The array to be converted. Should be either 1D or 2D
+            unit (urge.unit): The desired unit for all the values
+
+        Returns:
+            np.ndarray with the new units
+        """
+        if len(array.shape) == 1:
+            result = np.array([Value(value=x, unit=unit) for x in array], dtype=object)
+        elif len(array.shape) == 2:
+            result = np.array([[Value(value=x, unit=unit) for x in sub] for sub in array], dtype=object)
+        else:
+            raise ValueError('You are trying to convert an array with rank {0}, but only arrays with 1 or 2 dims'
+                             ' can be converted right now.'.format(len(array.shape)))
         return result
 
     def unit_str(self):
@@ -194,7 +210,7 @@ class Value(float):
         # if isinstance(other, float) or isinstance(other, int):
         #     return Value(value=super(Value, self).__sub__(other), unit=self.unit)
         assert isinstance(other, Value), 'You can only multiple Values with other Values'
-        assert other.unit.dimensionality == self.unit.dimensionality, 'You can only add values with the same dimensions'
+        assert other.unit   .dimensionality == self.unit.dimensionality, 'You can only add values with the same dimensions'
         result = self.value*self.unit - other.value*other.unit
         result = Value(value=result.magnitude, unit=result.units)
         return result

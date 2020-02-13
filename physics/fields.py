@@ -14,6 +14,7 @@ available_fields = {'temperature': ureg.kelvin,
                     'heat_conductivity': ureg.watt/(ureg.meter * ureg.kelvin),
                     'voltage': ureg.volt,
                     'current': ureg.amp,
+                    'time': ureg.seconds,
                     None: None
                     }
 
