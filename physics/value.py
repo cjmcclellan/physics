@@ -301,6 +301,10 @@ class Value(float):
             return self.unit, self.value, self.name, self.placeholder.name
         else:
             return self.unit, self.value, self.name, None
+
+    def __hash__(self):
+        # hash for Value is the just the float value
+        return self.value
     # # create a copy property used for copying a value over
     # @property
     # def copy(self):
