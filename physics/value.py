@@ -304,7 +304,7 @@ class Value(float):
 
     def __hash__(self):
         # hash for Value is the just the float value
-        return self.value
+        return str(self.value)
     # # create a copy property used for copying a value over
     # @property
     # def copy(self):
