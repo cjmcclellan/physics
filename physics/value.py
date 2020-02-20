@@ -137,7 +137,8 @@ class Value(float):
             return Value(value=other*self.value, unit=self.unit)
 
         # result = self.value * other.value
-        result = super(Value, self).__mul__(other)
+        #result = super(Value, self).__mul__(other)
+        result = super().__mul__(other)
         result *= self.unit * other.unit
         result = Value(value=result.magnitude, unit=result.units)
         return result
@@ -307,7 +308,7 @@ class Value(float):
 
     def __hash__(self):
         # hash for Value is the just the float value
-        return str(self.value)
+        return hash(self.value)
     # # create a copy property used for copying a value over
     # @property
     # def copy(self):
