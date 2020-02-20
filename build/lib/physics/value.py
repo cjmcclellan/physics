@@ -63,8 +63,6 @@ class Value(float):
                              ' can be converted right now.'.format(len(array.shape)))
         return result
 
-
-
     def unit_str(self):
 
         """Gives the str of the unit.
@@ -117,6 +115,11 @@ class Value(float):
     def compact_units(self):
         tmp = self.value * self.unit
         tmp = tmp.to_compact()
+        return Value(tmp.magnitude, tmp.units)
+
+    def base_units(self):
+        tmp = self.value * self.unit
+        tmp = tmp.to_base_units()
         return Value(tmp.magnitude, tmp.units)
 
     def __round__(self, n=None):
@@ -304,7 +307,7 @@ class Value(float):
 
     def __hash__(self):
         # hash for Value is the just the float value
-        return self.value
+        return str(self.value)
     # # create a copy property used for copying a value over
     # @property
     # def copy(self):
