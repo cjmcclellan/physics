@@ -219,7 +219,7 @@ class Value(float):
         # if isinstance(other, float) or isinstance(other, int):
         #     return Value(value=super(Value, self).__sub__(other), unit=self.unit)
         assert isinstance(other, Value), 'You can only multiple Values with other Values'
-        assert other.unit   .dimensionality == self.unit.dimensionality, 'You can only add values with the same dimensions'
+        assert other.unit.dimensionality == self.unit.dimensionality, 'You can only add values with the same dimensions'
         result = self.value*self.unit - other.value*other.unit
         result = Value(value=result.magnitude, unit=result.units)
         return result
@@ -235,7 +235,7 @@ class Value(float):
             return self.value*self.unit == other.value*other.unit
         # if other is not unit, then they are not the same
         else:
-            return False
+            return self.base_units().value == other
 
     def __gt__(self, other):
         # Check they are both values
@@ -244,7 +244,7 @@ class Value(float):
             return self.value * self.unit > other.value * other.unit
         # if other is not unit, then they are not the same
         else:
-            return False
+            return self.base_units().value > other
 
     def __lt__(self, other):
         # Check they are both values
@@ -253,7 +253,7 @@ class Value(float):
             return self.value * self.unit < other.value * other.unit
         # if other is not unit, then they are not the same
         else:
-            return False
+            return self.base_units().value < other
 
     def __le__(self, other):
         return self.__eq__(other) or self.__lt__(other)
