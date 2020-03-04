@@ -122,6 +122,11 @@ class Value(float):
         tmp = tmp.to_base_units()
         return Value(tmp.magnitude, tmp.units)
 
+    def reduced_units(self):
+        tmp = self.value*self.unit
+        tmp = tmp.to_reduced_units()
+        return Value(tmp.magnitude, tmp.units)
+
     def __round__(self, n=None):
         return Value(value=float.__round__(self, n), unit=self.unit)
 
