@@ -302,8 +302,12 @@ class Value(float):
         self.unit, self.value, self.name, self.placeholder = state
         # if the placeholder is not None, then import it from the default graph
         if self.placeholder is not None:
-            graph = tf.get_default_graph()
-            self.placeholder = graph.get_tensor_by_name(self.placeholder)
+            try:
+                graph = tf.get_default_graph()
+                self.placeholder = graph.get_tensor_by_name(self.placeholder)
+            except KeyError:
+                # if the placeholder was not found, just save as None
+                self.placeholder = None
 
     def __getstate__(self):
         if self.placeholder is not None:
