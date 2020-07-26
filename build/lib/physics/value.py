@@ -12,7 +12,16 @@ if conf.tf_flag:
 # -----------------
 
 
-class Value(float):
+class MetaValue(object):
+
+    """
+    The MetaValue class identifies objects that are Value like. Inheriting from this class will
+    cause the Value class to treat the object as a Value class during math operations.  This is helpful for objects that
+    have a Value object as a property for math operations (see SemiPy PhysicalProperty).
+    """
+
+
+class Value(MetaValue, float):
 
     """Value object built on the float object and using `Pint Units <https://pint.readthedocs.io/en/0.9/>`_.
 
@@ -138,7 +147,7 @@ class Value(float):
         if isinstance(other, np.ndarray):
             return other * np.array([self], dtype=object)
 
-        if not isinstance(other, Value):
+        if not isinstance(other, MetaValue):
             return Value(value=other*self.value, unit=self.unit)
 
         # result = self.value * other.value
@@ -157,9 +166,9 @@ class Value(float):
     def __truediv__(self, other):
         if isinstance(other, np.ndarray):
             return np.array([self], dtype=object) / other
-        if not isinstance(other, Value) and (isinstance(other, float) or isinstance(other, int)):
+        if not isinstance(other, MetaValue) and (isinstance(other, float) or isinstance(other, int)):
             return Value(value=super(Value, self).__truediv__(other), unit=self.unit)
-        assert isinstance(other, Value), 'You can only multiple Values with other Values'
+        assert isinstance(other, MetaValue), 'You can only multiple Values with other Values'
         # result = self.value * other.value
         try:
             result = super(Value, self).__truediv__(other)
@@ -172,9 +181,9 @@ class Value(float):
     def __rtruediv__(self, other):
         if isinstance(other, np.ndarray):
             return other / np.array([self], dtype=object)
-        if not isinstance(other, Value) and (isinstance(other, float) or isinstance(other, int)):
+        if not isinstance(other, MetaValue) and (isinstance(other, float) or isinstance(other, int)):
             return Value(value=super(Value, self).__rtruediv__(other), unit=(1/self.unit).units)
-        assert isinstance(other, Value), 'You can only multiple Values with other Values'
+        assert isinstance(other, MetaValue), 'You can only multiple Values with other Values'
         # result = self.value * other.value
         result = super(Value, self).__rtruediv__(other)
         result *= (other.unit / self.unit)
@@ -203,7 +212,7 @@ class Value(float):
         if isinstance(other, np.ndarray):
             return other + np.array([self], dtype=object)
 
-        if not isinstance(other, Value):
+        if not isinstance(other, MetaValue):
             return Value(value=other + self.value, unit=self.unit)
 
         assert other.unit.dimensionality == self.unit.dimensionality, 'You can only add values with the same dimensions'
@@ -219,11 +228,11 @@ class Value(float):
     def __sub__(self, other):
         if isinstance(other, np.ndarray):
             return np.array([self], dtype=object) - other
-        if not isinstance(other, Value):
+        if not isinstance(other, MetaValue):
             return Value(value=self.value - other, unit=self.unit)
         # if isinstance(other, float) or isinstance(other, int):
         #     return Value(value=super(Value, self).__sub__(other), unit=self.unit)
-        assert isinstance(other, Value), 'You can only multiple Values with other Values'
+        # assert isinstance(other, Value), 'You can only multiple Values with other Values'
         assert other.unit.dimensionality == self.unit.dimensionality, 'You can only add values with the same dimensions'
         result = self.value*self.unit - other.value*other.unit
         result = Value(value=result.magnitude, unit=result.units)
