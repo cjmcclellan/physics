@@ -12,6 +12,8 @@ physics/docstring.py
 physics/fields.py
 physics/fundamental_constants.py
 physics/helper.py
+physics/test.py
+physics/test_physics.py
 physics/units.py
 physics/units_b.py
 physics/value.py

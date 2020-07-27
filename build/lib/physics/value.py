@@ -12,7 +12,11 @@ if conf.tf_flag:
 # -----------------
 
 
-class MetaValue(object):
+class SuperValue(object):
+    pass
+
+
+class MetaValue(SuperValue):
 
     """
     The MetaValue class identifies objects that are Value like. Inheriting from this class will
@@ -20,8 +24,74 @@ class MetaValue(object):
     have a Value object as a property for math operations (see SemiPy PhysicalProperty).
     """
 
+    value = None
 
-class Value(MetaValue, float):
+    @property
+    def unit(self):
+        return self.value.unit
+
+    @unit.setter
+    def unit(self, _input):
+        self.value.unit = _input
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, _input):
+        self._value = _input
+
+    @property
+    def magnitude(self):
+        return self.value.magnitude
+
+    @magnitude.setter
+    def magnitude(self, _input):
+        self.value.magnitude = _input
+
+    # add all the math operations
+    def __add__(self, other):
+        return self.value + other
+
+    def __radd__(self, other):
+        return other + self.value
+
+    def __sub__(self, other):
+        return self.value - other
+
+    def __rsub__(self, other):
+        return other - self.value
+
+    def __mul__(self, other):
+        return self.value * other
+
+    def __rmul__(self, other):
+        return self.value * other
+
+    def __truediv__(self, other):
+        return self.value / other
+
+    def __rtruediv__(self, other):
+        return other / self.value
+
+    __div__ = __truediv__
+    __rdiv__ = __rtruediv__
+
+    def __lt__(self, other):
+        return self.value < other
+
+    def __gt__(self, other):
+        return self.value > other
+
+    def __eq__(self, other):
+        return self.value == other
+
+    def __neg__(self):
+        return self.value * -1
+
+
+class Value(float, SuperValue):
 
     """Value object built on the float object and using `Pint Units <https://pint.readthedocs.io/en/0.9/>`_.
 
@@ -87,8 +157,17 @@ class Value(MetaValue, float):
         a = pint_to_str(self.unit)
         return a
 
+    # @property
+    # def unit(self):
+    #     return self._unit
+    #
+    # @unit.setter
+    # def unit(self, input):
+    #     self._unit = input
+    #
+
     def __str__(self):
-        return '{0} '.format(self.value) + self.unit_str()
+        return '{0} '.format(self.magnitude) + self.unit_str()
 
     def __init__(self, value, unit=ureg.dimensionless, name=None, tf_shape=None):
         if unit is None:
@@ -99,7 +178,7 @@ class Value(MetaValue, float):
         # test = value * unit
         # test.to_reduced_units()
         self.unit = unit
-        self.value = value
+        self.magnitude = value
         self.name = name
         # if the tf flag is raised and a name is give, then create a placeholder
         if conf.tf_flag:
@@ -112,27 +191,27 @@ class Value(MetaValue, float):
                 self.placeholder = tf.placeholder(name=name, shape=self.tf_shape, dtype=conf.tf_dtype)
 
     def adjust_unit(self, desired_unit):
-        tmp = self.value*self.unit
+        tmp = self.magnitude*self.unit
         tmp = tmp.to(desired_unit)
         return Value(tmp.magnitude, tmp.units)
 
     def simplify_units(self):
-        tmp = self.value*self.unit
+        tmp = self.magnitude*self.unit
         tmp = tmp.to_reduced_units().to_compact()
         return Value(tmp.magnitude, tmp.units)
 
     def compact_units(self):
-        tmp = self.value * self.unit
+        tmp = self.magnitude * self.unit
         tmp = tmp.to_compact()
         return Value(tmp.magnitude, tmp.units)
 
     def base_units(self):
-        tmp = self.value * self.unit
+        tmp = self.magnitude * self.unit
         tmp = tmp.to_base_units()
         return Value(tmp.magnitude, tmp.units)
 
     def reduced_units(self):
-        tmp = self.value*self.unit
+        tmp = self.magnitude*self.unit
         tmp = tmp.to_reduced_units()
         return Value(tmp.magnitude, tmp.units)
 
@@ -140,19 +219,19 @@ class Value(MetaValue, float):
         return Value(value=float.__round__(self, n), unit=self.unit)
 
     def __neg__(self):
-        return Value(value=self.value*-1, unit=self.unit)
+        return Value(value=self.magnitude*-1, unit=self.unit)
 
     def __mul__(self, other):
         # check if this is an ndarray, if so cast the value to an array of the same shape
         if isinstance(other, np.ndarray):
             return other * np.array([self], dtype=object)
 
-        if not isinstance(other, MetaValue):
-            return Value(value=other*self.value, unit=self.unit)
+        if not isinstance(other, SuperValue):
+            return Value(value=other*self.magnitude, unit=self.unit)
 
-        # result = self.value * other.value
+        result = self.magnitude * other.magnitude
         #result = super(Value, self).__mul__(other)
-        result = super().__mul__(other)
+        # result = float.__mul__(other)
         result *= self.unit * other.unit
         result = Value(value=result.magnitude, unit=result.units)
         return result
@@ -161,17 +240,17 @@ class Value(MetaValue, float):
     __rmul__ = __mul__
 
     def __abs__(self):
-        return Value(value=abs(self.value), unit=self.unit)
+        return Value(value=abs(self.magnitude), unit=self.unit)
 
     def __truediv__(self, other):
         if isinstance(other, np.ndarray):
             return np.array([self], dtype=object) / other
-        if not isinstance(other, MetaValue) and (isinstance(other, float) or isinstance(other, int)):
+        if not isinstance(other, SuperValue) and (isinstance(other, float) or isinstance(other, int)):
             return Value(value=super(Value, self).__truediv__(other), unit=self.unit)
-        assert isinstance(other, MetaValue), 'You can only multiple Values with other Values'
-        # result = self.value * other.value
+        assert isinstance(other, SuperValue), 'You can only multiple Values with other Values'
+        # result = self.magnitude * other.magnitude
         try:
-            result = super(Value, self).__truediv__(other)
+            result = self.magnitude / other.magnitude
         except ZeroDivisionError:
             return np.inf
         result *= (self.unit / other.unit)
@@ -181,11 +260,12 @@ class Value(MetaValue, float):
     def __rtruediv__(self, other):
         if isinstance(other, np.ndarray):
             return other / np.array([self], dtype=object)
-        if not isinstance(other, MetaValue) and (isinstance(other, float) or isinstance(other, int)):
+        if not isinstance(other, SuperValue) and (isinstance(other, float) or isinstance(other, int)):
             return Value(value=super(Value, self).__rtruediv__(other), unit=(1/self.unit).units)
-        assert isinstance(other, MetaValue), 'You can only multiple Values with other Values'
-        # result = self.value * other.value
-        result = super(Value, self).__rtruediv__(other)
+        assert isinstance(other, SuperValue), 'You can only multiple Values with other Values'
+        # result = self.magnitude * other.magnitude
+        # result = super(Value, self).__rtruediv__(other)
+        result = other.magnitude / self.magnitude
         result *= (other.unit / self.unit)
         result = Value(value=result.magnitude, unit=result.units)
         return result
@@ -198,10 +278,10 @@ class Value(MetaValue, float):
 
     def sqrt(self):
         a = self.unit**0.5
-        return Value(value=self.value**0.5, unit=a)
+        return Value(value=self.magnitude**0.5, unit=a)
 
     def __pow__(self, power, modulo=None):
-        return Value(self.value**power, unit=self.unit**power)
+        return Value(self.magnitude**power, unit=self.unit**power)
 
     def unit_copy(self, other):
         assert not isinstance(other, Value), "You cannot create a value from another value"
@@ -212,12 +292,12 @@ class Value(MetaValue, float):
         if isinstance(other, np.ndarray):
             return other + np.array([self], dtype=object)
 
-        if not isinstance(other, MetaValue):
-            return Value(value=other + self.value, unit=self.unit)
+        if not isinstance(other, SuperValue):
+            return Value(value=other + self.magnitude, unit=self.unit)
 
         assert other.unit.dimensionality == self.unit.dimensionality, 'You can only add values with the same dimensions'
         # result = super(Value, self).__add__(other)
-        result = self.value*self.unit + other.value*other.unit
+        result = self.magnitude*self.unit + other.magnitude*other.unit
         # result *= self.unit * other.unit
         result = Value(value=result.magnitude, unit=result.units)
         return result
@@ -228,13 +308,13 @@ class Value(MetaValue, float):
     def __sub__(self, other):
         if isinstance(other, np.ndarray):
             return np.array([self], dtype=object) - other
-        if not isinstance(other, MetaValue):
-            return Value(value=self.value - other, unit=self.unit)
+        if not isinstance(other, SuperValue):
+            return Value(value=self.magnitude - other, unit=self.unit)
         # if isinstance(other, float) or isinstance(other, int):
         #     return Value(value=super(Value, self).__sub__(other), unit=self.unit)
         # assert isinstance(other, Value), 'You can only multiple Values with other Values'
         assert other.unit.dimensionality == self.unit.dimensionality, 'You can only add values with the same dimensions'
-        result = self.value*self.unit - other.value*other.unit
+        result = self.magnitude*self.unit - other.magnitude*other.unit
         result = Value(value=result.magnitude, unit=result.units)
         return result
 
@@ -244,30 +324,30 @@ class Value(MetaValue, float):
 
     def __eq__(self, other):
         # Check they are both values
-        if isinstance(other, Value):
+        if isinstance(other, SuperValue):
             # check they are the same
-            return self.value*self.unit == other.value*other.unit
+            return self.magnitude*self.unit == other.magnitude*other.unit
         # if other is not unit, then they are not the same
         else:
-            return self.base_units().value == other
+            return self.base_units().magnitude == other
 
     def __gt__(self, other):
         # Check they are both values
-        if isinstance(other, Value):
+        if isinstance(other, SuperValue):
             # check they are the same
-            return self.value * self.unit > other.value * other.unit
+            return self.magnitude * self.unit > other.magnitude * other.unit
         # if other is not unit, then they are not the same
         else:
-            return self.base_units().value > other
+            return self.base_units().magnitude > other
 
     def __lt__(self, other):
         # Check they are both values
-        if isinstance(other, Value):
+        if isinstance(other, SuperValue):
             # check they are the same
-            return self.value * self.unit < other.value * other.unit
+            return self.magnitude * self.unit < other.magnitude * other.unit
         # if other is not unit, then they are not the same
         else:
-            return self.base_units().value < other
+            return self.base_units().magnitude < other
 
     def __le__(self, other):
         return self.__eq__(other) or self.__lt__(other)
@@ -280,13 +360,13 @@ class Value(MetaValue, float):
 
     # the copy value function. Used for taking an __input Value but keeping the tensor
     def copy_value(self, __input):
-        assert isinstance(__input, Value), 'You can only copy_value from a Value instance'
-        self.value = __input.value
+        assert isinstance(__input, SuperValue), 'You can only copy_value from a Value instance'
+        self.magnitude = __input.magnitude
         self.unit = __input.unit
 
     # np functions
     def log10(self):
-        return Value(value=np.log10(self.value), unit=self.unit)
+        return Value(value=np.log10(self.magnitude), unit=self.unit)
 
     # define some properties
     @property
@@ -305,10 +385,10 @@ class Value(MetaValue, float):
     @property
     def tf_feed(self):
         newshape = np.ones_like(self.tf_shape)
-        return np.reshape(np.array(self.value), newshape=newshape)
+        return np.reshape(np.array(self.magnitude), newshape=newshape)
 
     def __setstate__(self, state):
-        self.unit, self.value, self.name, self.placeholder = state
+        self.unit, self.magnitude, self.name, self.placeholder = state
         # if the placeholder is not None, then import it from the default graph
         if self.placeholder is not None:
             try:
@@ -320,13 +400,13 @@ class Value(MetaValue, float):
 
     def __getstate__(self):
         if self.placeholder is not None:
-            return self.unit, self.value, self.name, self.placeholder.name
+            return self.unit, self.magnitude, self.name, self.placeholder.name
         else:
-            return self.unit, self.value, self.name, None
+            return self.unit, self.magnitude, self.name, None
 
     def __hash__(self):
         # hash for Value is the just the float value
-        return hash(self.value)
+        return hash(self.magnitude)
 
     # # create a copy property used for copying a value over
     # @property
